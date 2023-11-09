@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import './search-bar.css'
-import { Button, Col, Form, FormGroup } from 'reactstrap'
+import { Col, Form, FormGroup } from 'reactstrap'
 // import { useNavigate } from 'react-router-dom';
 import PlaceIcon from '@mui/icons-material/Place';
 import SocialDistanceIcon from '@mui/icons-material/SocialDistance';

@@ -1,0 +1,14 @@
+.thank_you span i {
+    font-size: 4rem;
+    color: green;
+}
+
+.thank_you .checkCss {
+    font-size: 70px;
+    color: green;
+}
+
+.thank_you h1 {
+    font-size: 2.5rem;
+    font-family: var(--subtitle-font-name);
+}
