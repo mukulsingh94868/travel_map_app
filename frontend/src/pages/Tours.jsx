@@ -6,15 +6,22 @@ import TourCard from '../shared/TourCard';
 import SearchBar from '../shared/SearchBar';
 import NewsLetter from '../shared/NewsLetter';
 import { Col, Container, Row } from 'reactstrap';
+import useFetch from '../hooks/useFetch';
+import { BASE_URL } from '../utils/config';
 
 const Tours = () => {
   const [pageCount, setPageCount] = useState(0);
   const [page, setPage] = useState(0);
 
+  const { data: tours, loading, error } = useFetch(`${BASE_URL}/tours?page=${page}`);
+  const { data: tourCount } = useFetch(`${BASE_URL}/tours/search/getTourCount`);
+
+
   useEffect(() => {
-    const pages = Math.ceil(5 / 4);
+    const pages = Math.ceil(tourCount / 8);
     setPageCount(pages);
-  }, [page]);
+    window.scrollTo(0, 0);
+  }, [page, tourCount, tours]);
   return (
     <>
       <CommonSection title="All Tours" />
@@ -29,35 +36,39 @@ const Tours = () => {
 
       <section className='pt-0'>
         <Container>
-          <Row>
-            {
-              tourData?.map((tour) => {
-                return (
-                  <Col lg="3" className='mb-4' key={tour?.id}>
-                    <TourCard tour={tour} />
-                  </Col>
-                )
-              })
-            }
+          {loading && <h4 className='text-center pt-5'>Loading...!</h4>}
+          {error && <h4 className='text-center pt-5'>{error}</h4>}
+          {
+            !loading && !error && <Row>
+              {
+                tours?.map((tour) => {
+                  return (
+                    <Col lg="3" className='mb-4' key={tour?._id}>
+                      <TourCard tour={tour} />
+                    </Col>
+                  )
+                })
+              }
 
-            <Col lg="12">
-              <div className='pagination d-flex align-items-center justify-content-center mt-4 gap-3'>
-                {
-                  [...Array(pageCount).keys()]?.map((number) => {
-                    return (
-                      <span
-                        key={number}
-                        onClick={() => setPage(number)}
-                        className={page === number ? 'active_page' : ''}
-                      >
-                        {number + 1}
-                      </span>
-                    )
-                  })
-                }
-              </div>
-            </Col>
-          </Row>
+              <Col lg="12">
+                <div className='pagination d-flex align-items-center justify-content-center mt-4 gap-3'>
+                  {
+                    [...Array(pageCount).keys()]?.map((number) => {
+                      return (
+                        <span
+                          key={number}
+                          onClick={() => setPage(number)}
+                          className={page === number ? 'active_page' : ''}
+                        >
+                          {number + 1}
+                        </span>
+                      )
+                    })
+                  }
+                </div>
+              </Col>
+            </Row>
+          }
         </Container>
       </section>
 

@@ -1,25 +1,36 @@
 import React, { useRef } from 'react';
 import './search-bar.css'
 import { Col, Form, FormGroup } from 'reactstrap'
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import PlaceIcon from '@mui/icons-material/Place';
 import SocialDistanceIcon from '@mui/icons-material/SocialDistance';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SearchIcon from '@mui/icons-material/Search';
+import { BASE_URL } from '../utils/config';
+
 
 const SearchBar = () => {
+    const navigate = useNavigate();
     const locationRef = useRef('');
     const distanceRef = useRef(0);
     const maxGroupSizeRef = useRef(0);
 
-    const searchHandler = () => {
+    const searchHandler = async () => {
         const location = locationRef.current.value;
         const distance = distanceRef.current.value;
         const maxGroupSize = maxGroupSizeRef.current.value;
 
         if (location === '' || distance === '' || maxGroupSize === '') {
             return alert('All fields are required!')
-        }
+        };
+
+        const res = await fetch(`${BASE_URL}/tours/search/getTourBySearch?city=${location}&distance=${distance}&maxGroupSize=${maxGroupSize}`);
+        if (!res?.ok) alert('Something went wrong')
+
+        const result = await res.json();
+        console.log('result', result);
+
+        navigate(`/tours/search?city=${location}&distance=${distance}&maxGroupSize=${maxGroupSize}`, { state: result.data })
     }
     return (
         <>
