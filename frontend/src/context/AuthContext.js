@@ -1,7 +1,7 @@
 import { createContext, useReducer, useEffect } from "react";
 
 const initia_state = {
-    user: localStorage.getItem("user") !== undefined ? JSON.parse(localStorage.getItem("user")) : null,
+    user: localStorage.getItem("user") !== undefined ? JSON.parse(localStorage.getItem("user")) : console.log('ni hai token'),
     loading: false,
     error: null,
 };
@@ -47,9 +47,10 @@ const AuthReducer = (state, action) => {
 
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, initia_state);
+    console.log('state', state);
 
     useEffect(() => {
-        localStorage.setItem("user", JSON.stringify(state?.user))
+        localStorage.setItem("user", JSON.stringify(state?.user));
     }, [state.user]);
 
     return (

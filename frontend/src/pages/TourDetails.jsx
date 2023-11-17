@@ -7,8 +7,6 @@ import calculateAvgRating from '../utils/avgRating'
 import avatar from '../assets/images/avatar.jpg'
 import NewsLetter from '../shared/NewsLetter'
 import useFetch from '../hooks/useFetch'
-import { BASE_URL } from '../utils/config'
-// import { AuthContext } from '../context/AuthContext';
 import StarIcon from '@mui/icons-material/Star';
 import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined';
 import SocialDistanceIcon from '@mui/icons-material/SocialDistance';
@@ -16,13 +14,16 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import LocationCityOutlinedIcon from '@mui/icons-material/LocationCityOutlined';
 import CurrencyRupeeOutlinedIcon from '@mui/icons-material/CurrencyRupeeOutlined';
 import StarPurple500OutlinedIcon from '@mui/icons-material/StarPurple500Outlined';
-import Booking from '../components/Booking/Booking'
+import Booking from '../components/Booking/Booking';
+import { AuthContext } from '../context/AuthContext';
+import { BASE_URL } from '../utils/config'
 
 
 const TourDetails = () => {
   const { id } = useParams();
   const reviewMsgRef = useRef('')
-  const [tourRating, setTourRating] = useState(null)
+  const [tourRating, setTourRating] = useState(null);
+  const { user } = useContext(AuthContext);
 
   const { data: tour, loading, error } = useFetch(`${BASE_URL}/tours/${id}`)
 
@@ -32,9 +33,35 @@ const TourDetails = () => {
 
   const options = { day: 'numeric', month: 'long', year: 'numeric' };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     const reviewText = reviewMsgRef.current.value;
+
+    try {
+      if (!user || user === undefined || user === null) {
+        alert('Please sign in!');
+      }
+      const reviewObj = {
+        username: user?.username,
+        reviewText,
+        rating: tourRating
+      }
+
+      const res = await fetch(`${BASE_URL}/review/${id}`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(reviewObj)
+      });
+      const result = await res.json();
+      if (!result.ok) {
+        alert(result.message);
+      }
+    } catch (error) {
+      alert('Error', error.message);
+    }
   };
 
   useEffect(() => {
@@ -44,7 +71,7 @@ const TourDetails = () => {
     <>
       <section>
         <Container>
-        {loading && <h4 className='text-center pt-5'>Loading...!</h4>}
+          {loading && <h4 className='text-center pt-5'>Loading...!</h4>}
           {error && <h4 className='text-center pt-5'>{error}</h4>}
           {
             !loading && !error && <Row>
